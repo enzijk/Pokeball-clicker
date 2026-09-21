@@ -12,8 +12,6 @@ let gameState = {
 let lastClickTime = 0;
 let comboTimer = null;
 
-// URL DA TEXTURA DA MOEDA 8-BIT DO MARIO
-const marioCoinImgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/coin.png"; // Imagem em estilo pixel art retro
 const pokeballImgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
 
 // GERADOR DE EFEITOS SONOROS (WEB AUDIO API)
@@ -165,8 +163,7 @@ function createFloatingText(event, power, isCrit = false) {
 
   const floatEl = document.createElement("div");
   floatEl.className = `float-text ${isCrit ? 'crit' : ''}`;
-  // SUBSTUÍDO A SPAN ANTERIOR PELA IMAGEM 8-BIT DO MARIO
-  floatEl.innerHTML = `<img src="${marioCoinImgUrl}" style="width:16px; height:20px; vertical-align:middle; margin-right:4px; image-rendering:pixelated;">+${power}${isCrit ? ' CRIT!' : ''}`;
+  floatEl.innerHTML = `<span class="mario-coin" style="width:14px; height:18px;"></span>+${power}${isCrit ? ' CRIT!' : ''}`;
   floatEl.style.left = `${x}px`;
   floatEl.style.top = `${y}px`;
 
@@ -265,7 +262,6 @@ function renderUpgrades() {
         </div>`;
     }
 
-    // SUBSTUÍDO O ÍCONE DA MOEDA PELO ÍCONE 8-BIT DO MARIO
     card.innerHTML = `
       <div class="upgrade-info">
         ${iconHTML}
@@ -275,7 +271,7 @@ function renderUpgrades() {
         </div>
       </div>
       <button class="buy-btn" id="btn-upg-${idx}" onclick="buyUpgrade(${idx})">
-        <img src="${marioCoinImgUrl}" style="width:14px; height:18px; vertical-align:middle; image-rendering:pixelated;">
+        <span class="mario-coin" style="width:12px; height:16px;"></span>
         ${upg.cost.toLocaleString()}
       </button>`;
     upgradesContainer.appendChild(card);
@@ -287,7 +283,6 @@ function renderMultipliers() {
   multiplierUpgrades.forEach((upg, idx) => {
     const card = document.createElement("div");
     card.className = "upgrade-card";
-    // SUBSTUÍDO O ÍCONE DA MOEDA PELO ÍCONE 8-BIT DO MARIO
     card.innerHTML = `
       <div class="upgrade-info">
         <img src="${upg.icon}" class="upgrade-icon-img">
@@ -297,7 +292,7 @@ function renderMultipliers() {
         </div>
       </div>
       <button class="buy-btn" id="btn-mult-${idx}" onclick="buyMultiplier(${idx})">
-        ${upg.bought ? 'COMPRADO' : `<img src="${marioCoinImgUrl}" style="width:14px; height:18px; vertical-align:middle; image-rendering:pixelated;"> ${upg.cost.toLocaleString()}`}
+        ${upg.bought ? 'COMPRADO' : `<span class="mario-coin" style="width:12px; height:16px;"></span> ${upg.cost.toLocaleString()}`}
       </button>`;
     multipliersContainer.appendChild(card);
   });
