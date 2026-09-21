@@ -12,6 +12,8 @@ let gameState = {
 let lastClickTime = 0;
 let comboTimer = null;
 
+// URL DA TEXTURA DA MOEDA 8-BIT DO MARIO
+const marioCoinImgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/coin.png"; // Imagem em estilo pixel art retro
 const pokeballImgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
 
 // GERADOR DE EFEITOS SONOROS (WEB AUDIO API)
@@ -71,7 +73,7 @@ const skins = [
   { name: "Dourada Reluzente", color: "#f59e0b" }
 ];
 
-// UPGRADES BASE
+// UPGRADES BASE AMPLIADOS
 const upgrades = [
   { id: "click1", name: "Clique Duplo", isDoubleBall: true, desc: "+1 por Clique Base", cost: 15, cpc: 1, cps: 0, count: 0, mult: 1.4 },
   { id: "auto1", name: "Pikachu Ajudante", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png", desc: "+1 por Segundo", cost: 50, cpc: 0, cps: 1, count: 0, mult: 1.35 },
@@ -84,7 +86,7 @@ const upgrades = [
   { id: "auto5", name: "Rayquaza Lendário", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/384.png", desc: "+1,200 por Segundo", cost: 150000, cpc: 0, cps: 1200, count: 0, mult: 1.6 }
 ];
 
-// MULTIPLICADORES DE POKEBALL
+// MULTIPLICADORES DE POKEBALL AMPLIADOS
 const multiplierUpgrades = [
   { id: "m_great", name: "Super Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png", desc: "Multiplica cliques por 2x", cost: 500, factor: 2, bought: false },
   { id: "m_ultra", name: "Ultra Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png", desc: "Multiplica cliques por 2x (Total 4x)", cost: 3500, factor: 2, bought: false },
@@ -163,7 +165,8 @@ function createFloatingText(event, power, isCrit = false) {
 
   const floatEl = document.createElement("div");
   floatEl.className = `float-text ${isCrit ? 'crit' : ''}`;
-  floatEl.innerHTML = `<span class="mario-coin" style="width:14px; height:18px;"></span>+${power}${isCrit ? ' CRIT!' : ''}`;
+  // SUBSTUÍDO A SPAN ANTERIOR PELA IMAGEM 8-BIT DO MARIO
+  floatEl.innerHTML = `<img src="${marioCoinImgUrl}" style="width:16px; height:20px; vertical-align:middle; margin-right:4px; image-rendering:pixelated;">+${power}${isCrit ? ' CRIT!' : ''}`;
   floatEl.style.left = `${x}px`;
   floatEl.style.top = `${y}px`;
 
@@ -262,6 +265,7 @@ function renderUpgrades() {
         </div>`;
     }
 
+    // SUBSTUÍDO O ÍCONE DA MOEDA PELO ÍCONE 8-BIT DO MARIO
     card.innerHTML = `
       <div class="upgrade-info">
         ${iconHTML}
@@ -271,7 +275,7 @@ function renderUpgrades() {
         </div>
       </div>
       <button class="buy-btn" id="btn-upg-${idx}" onclick="buyUpgrade(${idx})">
-        <span class="mario-coin" style="width:12px; height:16px;"></span>
+        <img src="${marioCoinImgUrl}" style="width:14px; height:18px; vertical-align:middle; image-rendering:pixelated;">
         ${upg.cost.toLocaleString()}
       </button>`;
     upgradesContainer.appendChild(card);
@@ -283,6 +287,7 @@ function renderMultipliers() {
   multiplierUpgrades.forEach((upg, idx) => {
     const card = document.createElement("div");
     card.className = "upgrade-card";
+    // SUBSTUÍDO O ÍCONE DA MOEDA PELO ÍCONE 8-BIT DO MARIO
     card.innerHTML = `
       <div class="upgrade-info">
         <img src="${upg.icon}" class="upgrade-icon-img">
@@ -292,7 +297,7 @@ function renderMultipliers() {
         </div>
       </div>
       <button class="buy-btn" id="btn-mult-${idx}" onclick="buyMultiplier(${idx})">
-        ${upg.bought ? 'COMPRADO' : `<span class="mario-coin" style="width:12px; height:16px;"></span> ${upg.cost.toLocaleString()}`}
+        ${upg.bought ? 'COMPRADO' : `<img src="${marioCoinImgUrl}" style="width:14px; height:18px; vertical-align:middle; image-rendering:pixelated;"> ${upg.cost.toLocaleString()}`}
       </button>`;
     multipliersContainer.appendChild(card);
   });
@@ -340,10 +345,7 @@ setInterval(() => {
   }
 }, 100);
 
-// INICIALIZAÇÃO DO JOGO
 renderUpgrades();
 renderMultipliers();
 renderSkins();
 updateUI();
-
-  
