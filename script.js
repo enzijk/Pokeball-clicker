@@ -71,7 +71,7 @@ const skins = [
   { name: "Dourada Reluzente", color: "#f59e0b" }
 ];
 
-// UPGRADES BASE AMPLIADOS
+// UPGRADES BASE
 const upgrades = [
   { id: "click1", name: "Clique Duplo", isDoubleBall: true, desc: "+1 por Clique Base", cost: 15, cpc: 1, cps: 0, count: 0, mult: 1.4 },
   { id: "auto1", name: "Pikachu Ajudante", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/25.png", desc: "+1 por Segundo", cost: 50, cpc: 0, cps: 1, count: 0, mult: 1.35 },
@@ -84,7 +84,7 @@ const upgrades = [
   { id: "auto5", name: "Rayquaza Lendário", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/384.png", desc: "+1,200 por Segundo", cost: 150000, cpc: 0, cps: 1200, count: 0, mult: 1.6 }
 ];
 
-// MULTIPLICADORES DE POKEBALL AMPLIADOS
+// MULTIPLICADORES DE POKEBALL
 const multiplierUpgrades = [
   { id: "m_great", name: "Super Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png", desc: "Multiplica cliques por 2x", cost: 500, factor: 2, bought: false },
   { id: "m_ultra", name: "Ultra Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png", desc: "Multiplica cliques por 2x (Total 4x)", cost: 3500, factor: 2, bought: false },
@@ -340,8 +340,10 @@ setInterval(() => {
   }
 }, 100);
 
+// INICIALIZAÇÃO DO JOGO
 renderUpgrades();
 renderMultipliers();
 renderSkins();
 updateUI();
 
+  
