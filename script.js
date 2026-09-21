@@ -1,4 +1,4 @@
-// ESTADO DO JOGO COM LOCALSTORAGE
+// ESTADO DO JOGO
 let gameState = {
   coins: 0,
   baseClickPower: 1,
@@ -154,7 +154,6 @@ pokeballBtn.addEventListener("pointerdown", (e) => {
   createFloatingText(e, power, isCrit);
   checkEvolution();
   updateUI();
-  saveGame();
 });
 
 function createFloatingText(event, power, isCrit = false) {
@@ -218,7 +217,6 @@ function checkEvolution() {
 function applySkin(color) {
   gameState.selectedSkinColor = color;
   pokeballTopBg.style.background = color;
-  saveGame();
 }
 
 function buyUpgrade(index) {
@@ -233,7 +231,6 @@ function buyUpgrade(index) {
     renderUpgrades();
     checkEvolution();
     updateUI();
-    saveGame();
   }
 }
 
@@ -247,7 +244,6 @@ function buyMultiplier(index) {
     renderMultipliers();
     checkEvolution();
     updateUI();
-    saveGame();
   }
 }
 
@@ -336,21 +332,6 @@ function updateUI() {
   });
 }
 
-function saveGame() {
-  localStorage.setItem("pokeClickerSave", JSON.stringify({ gameState, upgrades, multiplierUpgrades }));
-}
-
-function loadGame() {
-  const saved = localStorage.getItem("pokeClickerSave");
-  if (saved) {
-    const parsed = JSON.parse(saved);
-    Object.assign(gameState, parsed.gameState);
-    parsed.upgrades.forEach((u, i) => Object.assign(upgrades[i], u));
-    parsed.multiplierUpgrades.forEach((m, i) => Object.assign(multiplierUpgrades[i], m));
-    if (gameState.selectedSkinColor) pokeballTopBg.style.background = gameState.selectedSkinColor;
-  }
-}
-
 setInterval(() => {
   if (gameState.coinsPerSecond > 0) {
     gameState.coins += gameState.coinsPerSecond / 10;
@@ -359,8 +340,8 @@ setInterval(() => {
   }
 }, 100);
 
-loadGame();
 renderUpgrades();
 renderMultipliers();
 renderSkins();
 updateUI();
+
