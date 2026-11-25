@@ -2,21 +2,79 @@
 <html lang="pt-PT">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pokeball Clicker </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Pokeball Clicker Extreme</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <div class="game-container" id="game-container">
-    <!-- PAINEL ESQUERDO: ÁREA DA POKEBALL PRINCIPAL -->
-    <div class="click-zone">
-      <h1 class="header-title">Pokeball Clicker</h1>
+  <!-- TELA DO MENU PRINCIPAL -->
+  <div id="main-menu" class="menu-overlay">
+    <div class="menu-box">
+      <div class="menu-logo">⚡</div>
+      <h1 class="header-title" style="font-size: 1.4rem; margin-bottom: 5px;">Pokeball Clicker</h1>
+      <p style="color: #94a3b8; font-size: 0.8rem; margin-bottom: 20px;" id="welcome-subtitle">Aventura de Captura Suprema</p>
+      
+      <button class="menu-btn primary" onclick="startNewGame()">Iniciar novo jogo</button>
+      <button class="menu-btn secondary" onclick="openLeaderboard()">Placar pontual</button>
+      <button class="menu-btn secondary" onclick="openNameTagModal(false)">Mudar sua nametag</button>
+    </div>
+  </div>
 
-      <!-- ESTATÍSTICAS -->
-      <div class="stats-board">
+  <!-- TELA DE INATIVIDADE (20 MINUTOS) -->
+  <div id="afk-screen" class="menu-overlay hidden">
+    <div class="menu-box">
+      <h2 style="color: #ffcb05; margin-bottom: 15px;">Você está aí?</h2>
+      <p style="margin-bottom: 20px; color: #94a3b8; font-size: 0.9rem;">O jogo foi pausado devido à inatividade.</p>
+      <button class="menu-btn primary" onclick="resumeGame()">Estou aqui!</button>
+    </div>
+  </div>
+
+  <!-- MODAL DO PLACAR GLOBAL -->
+  <div id="leaderboard-modal" class="menu-overlay hidden">
+    <div class="menu-box" style="width: 340px;">
+      <h2 style="color: #ffcb05; margin-bottom: 10px; font-size: 1.1rem;">Placar Global</h2>
+      <div id="leaderboard-list" class="leaderboard-list"></div>
+      <button class="menu-btn secondary" onclick="closeLeaderboard()" style="margin-top: 15px; width: 100%; background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #ef4444;">Fechar</button>
+    </div>
+  </div>
+
+  <!-- MODAL DE ESCOLHER / MUDAR NAMETAG -->
+  <div id="nametag-modal" class="menu-overlay hidden" style="z-index: 3000;">
+    <div class="menu-box" style="width: 300px;">
+      <h2 style="color: #ffcb05; margin-bottom: 15px; font-size: 1.1rem;" id="nametag-title">Escolha sua Nametag</h2>
+      <input type="text" id="nametag-input" placeholder="Digite seu nome..." maxlength="12">
+      <div style="display: flex; gap: 10px; margin-top: 15px; width: 100%;">
+        <button class="menu-btn primary" onclick="saveNameTag()" style="background: #22c55e;">Salvar</button>
+        <button class="menu-btn secondary" id="nametag-cancel-btn" onclick="closeNameTagModal()" style="background: #ef4444; border:none; display:none;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE CONFIRMAÇÃO E AVISOS CUSTOMIZADO -->
+  <div id="custom-confirm-modal" class="menu-overlay hidden">
+    <div class="menu-box" style="width: 320px; text-align: center;">
+      <div style="font-size: 2rem; margin-bottom: 10px;" id="confirm-icon">⚠️</div>
+      <h2 style="color: #ffcb05; margin-bottom: 10px; font-size: 1.1rem;" id="confirm-title">Confirmação</h2>
+      <p style="font-size: 0.85rem; color: #94a3b8; margin-bottom: 20px; line-height: 1.4;" id="confirm-text">Mensagem de aviso aqui...</p>
+      <div style="display: flex; gap: 10px; width: 100%;" id="confirm-buttons-container">
+        <button class="menu-btn primary" id="confirm-yes-btn" style="background: #a855f7; flex: 1;">Sim</button>
+        <button class="menu-btn secondary" id="confirm-no-btn" onclick="closeCustomConfirm()" style="background: #ef4444; border:none; flex: 1;">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTAINER DO JOGO -->
+  <div class="game-container hidden" id="game-container">
+    <div class="click-zone">
+      <div style="display: flex; justify-content: space-between; width: 100%; align-items: center;">
+        <h1 class="header-title" style="font-size: 1.1rem; margin:0;">Pokeball Clicker</h1>
+        <button onclick="promptSaveScore()" style="background: #10b981; color: #fff; border: none; padding: 6px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; cursor: pointer;">Salvar Pontuação</button>
+      </div>
+
+      <div class="stats-board" style="margin-top: 10px;">
         <div class="stat-box">
-          <label>Moedas</label>
+          <label style="margin-bottom: 4px; display: block;">Moedas</label>
           <div class="val">
             <span class="mario-coin"></span>
             <span id="lbl-coins">0</span>
@@ -32,14 +90,16 @@
         </div>
       </div>
 
-      <!-- BADGE E COMBO -->
-      <div class="ball-card">
-        <div class="badge" id="lbl-badge">Comum</div>
-        <div class="ball-name" id="lbl-ball-name">Pokeball Clássica</div>
-        <div class="combo-badge" id="lbl-combo">Combo: 1.0x</div>
+      <div class="ball-card" style="width: 100%; display: flex; justify-content: space-between; align-items: center; padding: 6px 12px;">
+        <div>
+          <div class="badge" id="lbl-badge">Comum</div>
+          <div class="ball-name" id="lbl-ball-name" style="font-size: 0.9rem;">Pokeball Clássica</div>
+        </div>
+        <button id="rebirth-btn" onclick="promptRebirth()" style="background: #a855f7; color: #fff; border:none; padding: 6px 12px; border-radius: 8px; font-weight: 700; font-size: 0.7rem; cursor: pointer; display: none;">
+          ✨ Rebirth (<span id="rebirth-cost-lbl">5M</span>)
+        </button>
       </div>
 
-      <!-- POKEBALL CLICÁVEL -->
       <div class="pokeball-wrapper" id="pokeball-btn">
         <div class="pokeball" id="pokeball-main">
           <div class="pokeball-top" id="pokeball-top-bg"></div>
@@ -49,16 +109,13 @@
       </div>
     </div>
 
-    <!-- PAINEL DIREITO: LOJA E SISTEMA DE ABAS -->
     <div class="shop-panel">
-      <!-- NAVEGAÇÃO ENTRE ABAS -->
       <div class="shop-tabs">
         <button class="tab-btn active" id="tab-upgrades-btn" onclick="switchTab('upgrades')">⚡ Upgrades</button>
         <button class="tab-btn" id="tab-multipliers-btn" onclick="switchTab('multipliers')">✨ Pokeballs</button>
         <button class="tab-btn" id="tab-skins-btn" onclick="switchTab('skins')">🎨 Skins</button>
       </div>
 
-      <!-- CONTEÚDO DAS ABAS -->
       <div class="tab-content" id="tab-upgrades">
         <div class="upgrades-list" id="upgrades-container"></div>
       </div>
@@ -76,4 +133,3 @@
   <script src="script.js"></script>
 </body>
 </html>
-
