@@ -147,7 +147,7 @@ function showCustomMessage(icon, title, text, showCancel = true, onYesCallback =
     yesBtn.style.display = "block";
     yesBtn.innerText = "Ok";
     noBtn.style.display = "none";
-    yesBtn.onclick = () => {
+    noBtn.onclick = () => {
       closeCustomConfirm();
       if (onYesCallback) onYesCallback();
     };
@@ -208,11 +208,9 @@ function promptSaveScore() {
   );
 }
 
-// Salva e valida unicidade da nametag no placar global/local
 async function saveScoreAndGame() {
   let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
 
-  // Tenta sincronizar primeiro para garantir que temos a lista mais atualizada da nuvem
   try {
     const res = await fetch(`${API_URL}/latest`, {
       headers: { "X-Master-Key": API_KEY }
@@ -223,18 +221,7 @@ async function saveScoreAndGame() {
         scores = data.record.scores;
       }
     }
-  } catch (e) {
-    console.log("Modo offline para verificação de nome.");
-  }
-
-  let localStoredOriginalName = localStorage.getItem("poke_original_nametag") || gameState.playerName;
-
-  // Verifica se o nome já existe e pertence a OUTRA pessoa (um dispositivo/jogador diferente)
-  let existingEntry = scores.find(s => s.name.toLowerCase() === gameState.playerName.toLowerCase());
-  if (existingEntry && localStoredOriginalName.toLowerCase() !== gameState.playerName.toLowerCase()) {
-    showCustomMessage("❌", "Erro", "Essa nametag já pertence a alguem", false);
-    return;
-  }
+  } catch (e) {}
 
   let existingIndex = scores.findIndex(s => s.name.toLowerCase() === gameState.playerName.toLowerCase());
   if (existingIndex >= 0) {
@@ -247,7 +234,6 @@ async function saveScoreAndGame() {
 
   scores.sort((a, b) => b.clicks - a.clicks);
   localStorage.setItem("pokeLeaderboard", JSON.stringify(scores));
-  localStorage.setItem("poke_original_nametag", gameState.playerName);
 
   try {
     await fetch(API_URL, {
@@ -258,9 +244,7 @@ async function saveScoreAndGame() {
       },
       body: JSON.stringify({ scores: scores.slice(0, 30) })
     });
-  } catch (e) {
-    console.warn("Modo offline ativo.");
-  }
+  } catch (e) {}
 
   showCustomMessage(
     "✅",
@@ -292,9 +276,7 @@ async function openLeaderboard() {
         localStorage.setItem("pokeLeaderboard", JSON.stringify(scores));
       }
     }
-  } catch (e) {
-    console.log("Usando cache local.");
-  }
+  } catch (e) {}
 
   list.innerHTML = "";
   if (scores.length === 0) {
@@ -319,8 +301,10 @@ function openNameTagModal(forced = false) {
   isForcedNameTag = forced;
   const savedName = localStorage.getItem("poke_nametag") || gameState.playerName;
   document.getElementById("nametag-input").value = savedName;
+  document.getElementById("password-input").value = "";
+  document.getElementById("password-container").style.display = "none";
+  document.getElementById("nametag-error-msg").innerText = "";
   
-  // Limpa ou esconde avisos antigos se houver
   const titleEl = document.getElementById("nametag-title");
   const cancelBtn = document.getElementById("nametag-cancel-btn");
 
@@ -340,58 +324,96 @@ function closeNameTagModal() {
   document.getElementById("nametag-modal").classList.add("hidden");
 }
 
-async function saveNameTag() {
+// Lógica dinâmica para verificar se o nome existe e pedir senha correspondente
+async function handleNameTagStep() {
   let val = document.getElementById("nametag-input").value.trim();
+  let passInput = document.getElementById("password-input");
+  let passContainer = document.getElementById("password-container");
+  let errorMsg = document.getElementById("nametag-error-msg");
+
   if (!val) {
-    if (isForcedNameTag) {
-      showCustomMessage("⚠️", "Atenção", "Por favor, digite uma nametag para continuar!", false);
-    }
+    errorMsg.innerText = "Por favor, digite uma nametag!";
     return;
   }
 
-  // Verifica se o nome já está registado no placar global por outro jogador
-  let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
-  try {
-    const res = await fetch(`${API_URL}/latest`, {
-      headers: { "X-Master-Key": API_KEY }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.record && data.record.scores) {
-        scores = data.record.scores;
+  // Se o campo de senha ainda estiver escondido, verificamos se a nametag existe na nuvem/local
+  if (passContainer.style.display === "none") {
+    let passwordsMap = JSON.parse(localStorage.getItem("poke_passwords_map") || "{}");
+    let globalScores = [];
+    
+    try {
+      const res = await fetch(`${API_URL}/latest`, {
+        headers: { "X-Master-Key": API_KEY }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.record && data.record.scores) {
+          globalScores = data.record.scores;
+        }
+      }
+    } catch (e) {}
+
+    let nameExists = globalScores.some(s => s.name.toLowerCase() === val.toLowerCase()) || passwordsMap[val.toLowerCase()];
+    let mySavedName = localStorage.getItem("poke_nametag");
+
+    // Se o nome já pertence a outra pessoa e não foi criado neste telemóvel
+    if (nameExists && mySavedName !== val) {
+      passContainer.style.display = "block";
+      errorMsg.style.color = "#ffcb05";
+      errorMsg.innerText = "Coloque sua senha";
+      return;
+    } else {
+      // Se não existe ou é o próprio dono atualizando neste dispositivo
+      passContainer.style.display = "block";
+      errorMsg.style.color = "#ffcb05";
+      errorMsg.innerText = "Crie uma senha";
+      return;
+    }
+  } else {
+    // Validação final ao clicar após preencher a senha
+    let passwordVal = passInput.value.trim();
+    if (!passwordVal) {
+      errorMsg.style.color = "#ef4444";
+      errorMsg.innerText = "Por favor, insira a senha!";
+      return;
+    }
+
+    let passwordsMap = JSON.parse(localStorage.getItem("poke_passwords_map") || "{}");
+    let globalScores = [];
+    try {
+      const res = await fetch(`${API_URL}/latest`, {
+        headers: { "X-Master-Key": API_KEY }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.record && data.record.scores) {
+          globalScores = data.record.scores;
+        }
+      }
+    } catch (e) {}
+
+    let nameExists = globalScores.some(s => s.name.toLowerCase() === val.toLowerCase()) || passwordsMap[val.toLowerCase()];
+    let mySavedName = localStorage.getItem("poke_nametag");
+
+    if (nameExists && mySavedName !== val) {
+      // Nome já existe, verifica se a senha confere
+      if (passwordsMap[val.toLowerCase()] && passwordsMap[val.toLowerCase()] !== passwordVal) {
+        errorMsg.style.color = "#ef4444";
+        errorMsg.innerText = "Senha incorreta!";
+        return;
       }
     }
-  } catch (e) {}
 
-  let localStoredOriginalName = localStorage.getItem("poke_original_nametag") || "";
-  let existingEntry = scores.find(s => s.name.toLowerCase() === val.toLowerCase());
+    // Guarda a senha e assume a nametag
+    passwordsMap[val.toLowerCase()] = passwordVal;
+    localStorage.setItem("poke_passwords_map", JSON.stringify(passwordsMap));
 
-  // Se já existe no ranking e o dono original não é este telemóvel
-  if (existingEntry && localStoredOriginalName.toLowerCase() !== val.toLowerCase()) {
-    // Cria ou reutiliza um elemento para mostrar o aviso em vermelho direto no modal da nametag
-    let errorMsg = document.getElementById("nametag-error-msg");
-    if (!errorMsg) {
-      errorMsg = document.createElement("div");
-      errorMsg.id = "nametag-error-msg";
-      errorMsg.style.color = "#ef4444";
-      errorMsg.style.fontSize = "0.75rem";
-      errorMsg.style.marginTop = "8px";
-      errorMsg.style.fontWeight = "700";
-      document.getElementById("nametag-input").insertAdjacentElement("afterend", errorMsg);
-    }
-    errorMsg.innerText = "Essa nametag já pertence a alguem";
-    return;
+    gameState.playerName = val;
+    localStorage.setItem("poke_nametag", val);
+    welcomeSubtitle.innerText = `Treinador(a): ${gameState.playerName}`;
+    document.getElementById("nametag-modal").classList.add("hidden");
+    isForcedNameTag = false;
   }
-
-  // Se passou na validação, limpa o erro e guarda
-  let errorMsg = document.getElementById("nametag-error-msg");
-  if (errorMsg) errorMsg.innerText = "";
-
-  gameState.playerName = val;
-  localStorage.setItem("poke_nametag", val);
-  welcomeSubtitle.innerText = `Treinador(a): ${gameState.playerName}`;
-  document.getElementById("nametag-modal").classList.add("hidden");
-  isForcedNameTag = false;
 }
 
 function startAfkTimer() {
