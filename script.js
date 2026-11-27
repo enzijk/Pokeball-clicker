@@ -16,10 +16,6 @@ let comboTimer = null;
 let lastActivityTime = Date.now();
 let afkCheckInterval = null;
 
-const API_KEY = "$2a$10$/E0Hg9H1j77Tf/ew.CKFju9aGdyrlFvdL7PrACuJ2TaM2Z8rwGlee";
-const BIN_ID = "6b08d9d91b390e1b559a48c8"; // Atualizado com o teu novo Bin Público
-const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-
 const pokeballImgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
 
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -127,33 +123,16 @@ function getRebirthCost() {
   return costs[gameState.rebirthCount] || 2000000000;
 }
 
-// FUNÇÃO ADMIN GLOBAL PARA ZERAR O PLACAR COM MODO CORS ATIVO
+// FUNÇÃO ADMIN LOCAL (ZERAR PLACAR SEM ERROS DE NUVEM)
 async function adminResetGlobalLeaderboard() {
   showCustomMessage(
     "⚠️",
     "Zerar Placar Global",
-    "Tem certeza que deseja apagar TODAS as pontuações do placar global na nuvem?",
+    "Tem certeza que deseja apagar TODAS as pontuações do placar?",
     true,
-    async () => {
-      try {
-        const res = await fetch(API_URL, {
-          method: "PUT",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Master-Key": API_KEY
-          },
-          body: JSON.stringify({ scores: [] })
-        });
-        if (res.ok) {
-          localStorage.removeItem("pokeLeaderboard");
-          showCustomMessage("✅", "Sucesso", "Placar global zerado com sucesso na nuvem!", false);
-        } else {
-          showCustomMessage("❌", "Erro", "Não foi possível conectar à nuvem para zerar.", false);
-        }
-      } catch (e) {
-        showCustomMessage("❌", "Erro", "Falha de rede ao tentar zerar o placar.", false);
-      }
+    () => {
+      localStorage.removeItem("pokeLeaderboard");
+      showCustomMessage("✅", "Sucesso", "Placar zerado com sucesso!", false);
     }
   );
 }
@@ -250,24 +229,9 @@ function promptSaveScore() {
   );
 }
 
-// SALVAMENTO SEGURO COM SUPORTE A CLIQUES GIGANTES E CORS
+// SALVAMENTO SEGURO NO LOCALSTORAGE
 async function saveScoreAndGame() {
   let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
-
-  try {
-    const res = await fetch(`${API_URL}/latest`, {
-      method: "GET",
-      mode: "cors",
-      headers: { "X-Master-Key": API_KEY }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.record && data.record.scores) {
-        scores = data.record.scores;
-      }
-    }
-  } catch (e) {}
-
   let currentClicks = Number(gameState.totalClicks) || 0;
 
   let existingIndex = scores.findIndex(s => s.name.toLowerCase() === gameState.playerName.toLowerCase());
@@ -283,18 +247,6 @@ async function saveScoreAndGame() {
   scores.sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
   localStorage.setItem("pokeLeaderboard", JSON.stringify(scores));
 
-  try {
-    await fetch(API_URL, {
-      method: "PUT",
-      mode: "cors",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Master-Key": API_KEY
-      },
-      body: JSON.stringify({ scores: scores.slice(0, 30) })
-    });
-  } catch (e) {}
-
   gameContainer.classList.add("hidden");
   mainMenu.classList.remove("hidden");
 }
@@ -305,21 +257,6 @@ async function openLeaderboard() {
   document.getElementById("leaderboard-modal").classList.remove("hidden");
 
   let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
-
-  try {
-    const res = await fetch(`${API_URL}/latest`, {
-      method: "GET",
-      mode: "cors",
-      headers: { "X-Master-Key": API_KEY }
-    });
-    if (res.ok) {
-      const data = await res.json();
-      if (data.record && data.record.scores) {
-        scores = data.record.scores;
-        localStorage.setItem("pokeLeaderboard", JSON.stringify(scores));
-      }
-    }
-  } catch (e) {}
 
   list.innerHTML = "";
   if (scores.length === 0) {
@@ -382,21 +319,7 @@ async function handleNameTagStep() {
 
   if (passContainer.style.display === "none") {
     let passwordsMap = JSON.parse(localStorage.getItem("poke_passwords_map") || "{}");
-    let globalScores = [];
-    
-    try {
-      const res = await fetch(`${API_URL}/latest`, {
-        method: "GET",
-        mode: "cors",
-        headers: { "X-Master-Key": API_KEY }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.record && data.record.scores) {
-          globalScores = data.record.scores;
-        }
-      }
-    } catch (e) {}
+    let globalScores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
 
     let nameExists = globalScores.some(s => s.name.toLowerCase() === val.toLowerCase()) || passwordsMap[val.toLowerCase()];
     let mySavedName = localStorage.getItem("poke_nametag");
@@ -419,20 +342,7 @@ async function handleNameTagStep() {
     }
 
     let passwordsMap = JSON.parse(localStorage.getItem("poke_passwords_map") || "{}");
-    let globalScores = [];
-    try {
-      const res = await fetch(`${API_URL}/latest`, {
-        method: "GET",
-        mode: "cors",
-        headers: { "X-Master-Key": API_KEY }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (data.record && data.record.scores) {
-          globalScores = data.record.scores;
-        }
-      }
-    } catch (e) {}
+    let globalScores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
 
     let nameExists = globalScores.some(s => s.name.toLowerCase() === val.toLowerCase()) || passwordsMap[val.toLowerCase()];
     let mySavedName = localStorage.getItem("poke_nametag");
