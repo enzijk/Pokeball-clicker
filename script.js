@@ -147,7 +147,7 @@ function showCustomMessage(icon, title, text, showCancel = true, onYesCallback =
     yesBtn.style.display = "block";
     yesBtn.innerText = "Ok";
     noBtn.style.display = "none";
-    noBtn.onclick = () => {
+    yesBtn.onclick = () => {
       closeCustomConfirm();
       if (onYesCallback) onYesCallback();
     };
@@ -324,7 +324,6 @@ function closeNameTagModal() {
   document.getElementById("nametag-modal").classList.add("hidden");
 }
 
-// Lógica dinâmica para verificar se o nome existe e pedir senha correspondente
 async function handleNameTagStep() {
   let val = document.getElementById("nametag-input").value.trim();
   let passInput = document.getElementById("password-input");
@@ -332,11 +331,12 @@ async function handleNameTagStep() {
   let errorMsg = document.getElementById("nametag-error-msg");
 
   if (!val) {
+    errorMsg.style.color = "#ef4444";
     errorMsg.innerText = "Por favor, digite uma nametag!";
     return;
   }
 
-  // Se o campo de senha ainda estiver escondido, verificamos se a nametag existe na nuvem/local
+  // Verifica se o campo de senha está escondido
   if (passContainer.style.display === "none") {
     let passwordsMap = JSON.parse(localStorage.getItem("poke_passwords_map") || "{}");
     let globalScores = [];
@@ -356,21 +356,16 @@ async function handleNameTagStep() {
     let nameExists = globalScores.some(s => s.name.toLowerCase() === val.toLowerCase()) || passwordsMap[val.toLowerCase()];
     let mySavedName = localStorage.getItem("poke_nametag");
 
-    // Se o nome já pertence a outra pessoa e não foi criado neste telemóvel
+    passContainer.style.display = "block";
+    errorMsg.style.color = "#ffcb05";
+
     if (nameExists && mySavedName !== val) {
-      passContainer.style.display = "block";
-      errorMsg.style.color = "#ffcb05";
       errorMsg.innerText = "Coloque sua senha";
-      return;
     } else {
-      // Se não existe ou é o próprio dono atualizando neste dispositivo
-      passContainer.style.display = "block";
-      errorMsg.style.color = "#ffcb05";
       errorMsg.innerText = "Crie uma senha";
-      return;
     }
+    return;
   } else {
-    // Validação final ao clicar após preencher a senha
     let passwordVal = passInput.value.trim();
     if (!passwordVal) {
       errorMsg.style.color = "#ef4444";
@@ -396,7 +391,6 @@ async function handleNameTagStep() {
     let mySavedName = localStorage.getItem("poke_nametag");
 
     if (nameExists && mySavedName !== val) {
-      // Nome já existe, verifica se a senha confere
       if (passwordsMap[val.toLowerCase()] && passwordsMap[val.toLowerCase()] !== passwordVal) {
         errorMsg.style.color = "#ef4444";
         errorMsg.innerText = "Senha incorreta!";
@@ -404,7 +398,6 @@ async function handleNameTagStep() {
       }
     }
 
-    // Guarda a senha e assume a nametag
     passwordsMap[val.toLowerCase()] = passwordVal;
     localStorage.setItem("poke_passwords_map", JSON.stringify(passwordsMap));
 
@@ -414,6 +407,26 @@ async function handleNameTagStep() {
     document.getElementById("nametag-modal").classList.add("hidden");
     isForcedNameTag = false;
   }
+}
+
+// Como reiniciar todos os dados do jogo guardados no telemóvel:
+function resetGameData() {
+  showCustomMessage(
+    "🗑️",
+    "Reiniciar Dados",
+    "Tem certeza que deseja apagar sua nametag, senhas e dados locais salvos neste dispositivo?",
+    true,
+    () => {
+      localStorage.removeItem("poke_nametag");
+      localStorage.removeItem("poke_passwords_map");
+      localStorage.removeItem("pokeLeaderboard");
+      gameState.playerName = "";
+      welcomeSubtitle.innerText = "Aventura de Captura Suprema";
+      showCustomMessage("✨", "Pronto", "Dados limpos com sucesso!", false, () => {
+        openNameTagModal(true);
+      });
+    }
+  );
 }
 
 function startAfkTimer() {
