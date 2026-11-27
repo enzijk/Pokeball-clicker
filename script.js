@@ -127,18 +127,7 @@ function getRebirthCost() {
   return costs[gameState.rebirthCount] || 2000000000;
 }
 
-// ADICIONAR SUPORTE TÁCTIL (TOUCH) DIRETO NO BOTÃO ADMIN
-window.addEventListener('DOMContentLoaded', () => {
-  const adminBtn = document.getElementById("admin-reset-btn");
-  if (adminBtn) {
-    adminBtn.addEventListener("click", adminResetGlobalLeaderboard);
-    adminBtn.addEventListener("touchend", (e) => {
-      e.preventDefault();
-      adminResetGlobalLeaderboard();
-    });
-  }
-});
-
+// FUNÇÃO ADMIN GLOBAL DISPONÍVEL IMEDIATAMENTE
 async function adminResetGlobalLeaderboard() {
   showCustomMessage(
     "⚠️",
