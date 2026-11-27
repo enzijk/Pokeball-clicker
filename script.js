@@ -123,20 +123,6 @@ function getRebirthCost() {
   return costs[gameState.rebirthCount] || 2000000000;
 }
 
-// FUNÇÃO ADMIN LOCAL (ZERAR PLACAR SEM ERROS DE NUVEM)
-async function adminResetGlobalLeaderboard() {
-  showCustomMessage(
-    "⚠️",
-    "Zerar Placar Global",
-    "Tem certeza que deseja apagar TODAS as pontuações do placar?",
-    true,
-    () => {
-      localStorage.removeItem("pokeLeaderboard");
-      showCustomMessage("✅", "Sucesso", "Placar zerado com sucesso!", false);
-    }
-  );
-}
-
 function showCustomMessage(icon, title, text, showCancel = true, onYesCallback = null) {
   document.getElementById("confirm-icon").innerText = icon;
   document.getElementById("confirm-title").innerText = title;
@@ -229,7 +215,6 @@ function promptSaveScore() {
   );
 }
 
-// SALVAMENTO SEGURO NO LOCALSTORAGE
 async function saveScoreAndGame() {
   let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
   let currentClicks = Number(gameState.totalClicks) || 0;
@@ -317,20 +302,24 @@ async function handleNameTagStep() {
     return;
   }
 
+  if (gameState.playerName && gameState.playerName.toLowerCase() === val.toLowerCase()) {
+    errorMsg.style.color = "#ef4444";
+    errorMsg.innerText = "Você já está usando essa nametag!";
+    return;
+  }
+
+  let passwordsMap = JSON.parse(localStorage.getItem("poke_passwords_map") || "{}");
+  let nameKey = val.toLowerCase();
+  let hasPasswordRegistered = passwordsMap[nameKey] !== undefined && passwordsMap[nameKey] !== "";
+
   if (passContainer.style.display === "none") {
-    let passwordsMap = JSON.parse(localStorage.getItem("poke_passwords_map") || "{}");
-    let globalScores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
-
-    let nameExists = globalScores.some(s => s.name.toLowerCase() === val.toLowerCase()) || passwordsMap[val.toLowerCase()];
-    let mySavedName = localStorage.getItem("poke_nametag");
-
     passContainer.style.display = "block";
     errorMsg.style.color = "#ffcb05";
 
-    if (nameExists && mySavedName !== val) {
-      errorMsg.innerText = "Coloque sua senha";
+    if (hasPasswordRegistered) {
+      errorMsg.innerText = "Esta Nametag já existe. Digite a senha:";
     } else {
-      errorMsg.innerText = "Crie uma senha";
+      errorMsg.innerText = "Crie uma senha para esta Nametag:";
     }
     return;
   } else {
@@ -341,22 +330,16 @@ async function handleNameTagStep() {
       return;
     }
 
-    let passwordsMap = JSON.parse(localStorage.getItem("poke_passwords_map") || "{}");
-    let globalScores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
-
-    let nameExists = globalScores.some(s => s.name.toLowerCase() === val.toLowerCase()) || passwordsMap[val.toLowerCase()];
-    let mySavedName = localStorage.getItem("poke_nametag");
-
-    if (nameExists && mySavedName !== val) {
-      if (passwordsMap[val.toLowerCase()] && passwordsMap[val.toLowerCase()] !== passwordVal) {
+    if (hasPasswordRegistered) {
+      if (passwordsMap[nameKey] !== passwordVal) {
         errorMsg.style.color = "#ef4444";
         errorMsg.innerText = "Senha incorreta!";
         return;
       }
+    } else {
+      passwordsMap[nameKey] = passwordVal;
+      localStorage.setItem("poke_passwords_map", JSON.stringify(passwordsMap));
     }
-
-    passwordsMap[val.toLowerCase()] = passwordVal;
-    localStorage.setItem("poke_passwords_map", JSON.stringify(passwordsMap));
 
     gameState.playerName = val;
     localStorage.setItem("poke_nametag", val);
