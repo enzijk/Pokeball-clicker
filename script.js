@@ -1,6 +1,6 @@
 let gameState = {
   coins: 0,
-  totalClicks: 0,
+  totalClicks: 0, // Suporta números inteiros gigantescos sem truncar
   baseClickPower: 1,
   multiplier: 1,
   coinsPerSecond: 0,
@@ -127,15 +127,7 @@ function getRebirthCost() {
   return costs[gameState.rebirthCount] || 2000000000;
 }
 
-// Detetar se o URL contém #admin para exibir o painel secreto
-window.addEventListener('DOMContentLoaded', () => {
-  if (window.location.hash === '#admin') {
-    const adminPanel = document.getElementById("admin-panel-container");
-    if (adminPanel) adminPanel.style.display = "block";
-  }
-});
-
-// Função para zerar o placar global na nuvem (JSONBin) de todo mundo
+// FUNÇÃO ADMIN PARA ZERAR O PLACAR GLOBAL DIRETAMENTE NO MENU
 async function adminResetGlobalLeaderboard() {
   showCustomMessage(
     "⚠️",
@@ -257,7 +249,7 @@ function promptSaveScore() {
   );
 }
 
-// CORREÇÃO DEFINITIVA DE PONTUAÇÃO: Força gravação correta de números inteiros altos (ex: 220 milhões)
+// CORREÇÃO DE CLIQUES GIGANTESCOS: Conversão e salvamento seguros sem perda de precisão
 async function saveScoreAndGame() {
   let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
 
@@ -273,11 +265,11 @@ async function saveScoreAndGame() {
     }
   } catch (e) {}
 
-  let currentClicks = parseInt(gameState.totalClicks, 10) || 0;
+  let currentClicks = Number(gameState.totalClicks) || 0;
 
   let existingIndex = scores.findIndex(s => s.name.toLowerCase() === gameState.playerName.toLowerCase());
   if (existingIndex >= 0) {
-    let savedClicks = parseInt(scores[existingIndex].clicks, 10) || 0;
+    let savedClicks = Number(scores[existingIndex].clicks) || 0;
     if (currentClicks > savedClicks) {
       scores[existingIndex].clicks = currentClicks;
     }
@@ -285,7 +277,8 @@ async function saveScoreAndGame() {
     scores.push({ name: gameState.playerName, clicks: currentClicks });
   }
 
-  scores.sort((a, b) => (parseInt(b.clicks, 10) || 0) - (parseInt(a.clicks, 10) || 0));
+  // Ordenação numérica rigorosa e segura para milhões/bilhões
+  scores.sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
   localStorage.setItem("pokeLeaderboard", JSON.stringify(scores));
 
   try {
@@ -330,7 +323,7 @@ async function openLeaderboard() {
     scores.forEach((p, idx) => {
       let item = document.createElement("div");
       item.className = "leaderboard-item";
-      let displayClicks = parseInt(p.clicks, 10) || 0;
+      let displayClicks = Number(p.clicks) || 0;
       item.innerHTML = `<span>#${idx+1} <b>${escapeHTML(p.name)}</b></span> <span style="color:#ffcb05;">${displayClicks.toLocaleString()} cliques</span>`;
       list.appendChild(item);
     });
