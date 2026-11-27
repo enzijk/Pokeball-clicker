@@ -85,7 +85,6 @@ const defaultUpgrades = [
   { id: "rb_up5", name: "DNA Sincro (Kyurem)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dna-splicers.png", desc: "+50.000 por Clique Base", cost: 150000000, cpc: 50000, cps: 0, count: 0, mult: 1.9, rebirthReq: 5 }
 ];
 
-// MULTIPLICADORES NERFADOS (Fatores reduzidos e custos aumentados para balancear o jogo)
 const defaultMultipliers = [
   { id: "m_great", name: "Super Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png", desc: "Multiplica cliques por 1.3x", cost: 800, factor: 1.3, bought: false, rebirthReq: 0 },
   { id: "m_ultra", name: "Ultra Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png", desc: "Multiplica cliques por 1.4x", cost: 5000, factor: 1.4, bought: false, rebirthReq: 0 },
@@ -128,7 +127,44 @@ function getRebirthCost() {
   return costs[gameState.rebirthCount] || 2000000000;
 }
 
-// CORREÇÃO DOS MODAIS: Garante resposta imediata no primeiro toque/clique sem falhas
+// Detetar se o URL contém #admin para exibir o painel secreto
+window.addEventListener('DOMContentLoaded', () => {
+  if (window.location.hash === '#admin') {
+    const adminPanel = document.getElementById("admin-panel-container");
+    if (adminPanel) adminPanel.style.display = "block";
+  }
+});
+
+// Função para zerar o placar global na nuvem (JSONBin) de todo mundo
+async function adminResetGlobalLeaderboard() {
+  showCustomMessage(
+    "⚠️",
+    "Zerar Placar Global",
+    "Tem certeza que deseja apagar TODAS as pontuações do placar global na nuvem?",
+    true,
+    async () => {
+      try {
+        const res = await fetch(API_URL, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Master-Key": API_KEY
+          },
+          body: JSON.stringify({ scores: [] })
+        });
+        if (res.ok) {
+          localStorage.removeItem("pokeLeaderboard");
+          showCustomMessage("✅", "Sucesso", "Placar global zerado com sucesso na nuvem!", false);
+        } else {
+          showCustomMessage("❌", "Erro", "Não foi possível conectar à nuvem para zerar.", false);
+        }
+      } catch (e) {
+        showCustomMessage("❌", "Erro", "Falha de rede ao tentar zerar o placar.", false);
+      }
+    }
+  );
+}
+
 function showCustomMessage(icon, title, text, showCancel = true, onYesCallback = null) {
   document.getElementById("confirm-icon").innerText = icon;
   document.getElementById("confirm-title").innerText = title;
@@ -137,7 +173,6 @@ function showCustomMessage(icon, title, text, showCancel = true, onYesCallback =
   const yesBtn = document.getElementById("confirm-yes-btn");
   const noBtn = document.getElementById("confirm-no-btn");
 
-  // Substitui os ouvintes por novas instâncias limpas para evitar duplicação ou atrasos
   const newYesBtn = yesBtn.cloneNode(true);
   yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
 
@@ -222,7 +257,7 @@ function promptSaveScore() {
   );
 }
 
-// CORREÇÃO DE PONTUAÇÃO: Força leitura estricta de inteiros para evitar bugs em valores altos (milhões/bilhões)
+// CORREÇÃO DEFINITIVA DE PONTUAÇÃO: Força gravação correta de números inteiros altos (ex: 220 milhões)
 async function saveScoreAndGame() {
   let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
 
@@ -250,7 +285,6 @@ async function saveScoreAndGame() {
     scores.push({ name: gameState.playerName, clicks: currentClicks });
   }
 
-  // Ordenação rigorosa por número inteiro decrescente
   scores.sort((a, b) => (parseInt(b.clicks, 10) || 0) - (parseInt(a.clicks, 10) || 0));
   localStorage.setItem("pokeLeaderboard", JSON.stringify(scores));
 
@@ -265,7 +299,6 @@ async function saveScoreAndGame() {
     });
   } catch (e) {}
 
-  // Retorno imediato e fluido ao menu principal
   gameContainer.classList.add("hidden");
   mainMenu.classList.remove("hidden");
 }
