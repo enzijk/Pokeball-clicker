@@ -17,7 +17,7 @@ let lastActivityTime = Date.now();
 let afkCheckInterval = null;
 
 const API_KEY = "$2a$10$/E0Hg9H1j77Tf/ew.CKFju9aGdyrlFvdL7PrACuJ2TaM2Z8rwGlee";
-const BIN_ID = "6b08acbd3957a11c53b53765";
+const BIN_ID = "6b08d9d91b390e1b559a48c8"; // Atualizado com o teu novo Bin Público
 const API_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
 
 const pokeballImgUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/poke-ball.png";
@@ -127,7 +127,7 @@ function getRebirthCost() {
   return costs[gameState.rebirthCount] || 2000000000;
 }
 
-// FUNÇÃO ADMIN GLOBAL DISPONÍVEL IMEDIATAMENTE
+// FUNÇÃO ADMIN GLOBAL PARA ZERAR O PLACAR COM MODO CORS ATIVO
 async function adminResetGlobalLeaderboard() {
   showCustomMessage(
     "⚠️",
@@ -138,6 +138,7 @@ async function adminResetGlobalLeaderboard() {
       try {
         const res = await fetch(API_URL, {
           method: "PUT",
+          mode: "cors",
           headers: {
             "Content-Type": "application/json",
             "X-Master-Key": API_KEY
@@ -249,11 +250,14 @@ function promptSaveScore() {
   );
 }
 
+// SALVAMENTO SEGURO COM SUPORTE A CLIQUES GIGANTES E CORS
 async function saveScoreAndGame() {
   let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
 
   try {
     const res = await fetch(`${API_URL}/latest`, {
+      method: "GET",
+      mode: "cors",
       headers: { "X-Master-Key": API_KEY }
     });
     if (res.ok) {
@@ -282,6 +286,7 @@ async function saveScoreAndGame() {
   try {
     await fetch(API_URL, {
       method: "PUT",
+      mode: "cors",
       headers: {
         "Content-Type": "application/json",
         "X-Master-Key": API_KEY
@@ -303,6 +308,8 @@ async function openLeaderboard() {
 
   try {
     const res = await fetch(`${API_URL}/latest`, {
+      method: "GET",
+      mode: "cors",
       headers: { "X-Master-Key": API_KEY }
     });
     if (res.ok) {
@@ -379,6 +386,8 @@ async function handleNameTagStep() {
     
     try {
       const res = await fetch(`${API_URL}/latest`, {
+        method: "GET",
+        mode: "cors",
         headers: { "X-Master-Key": API_KEY }
       });
       if (res.ok) {
@@ -413,6 +422,8 @@ async function handleNameTagStep() {
     let globalScores = [];
     try {
       const res = await fetch(`${API_URL}/latest`, {
+        method: "GET",
+        mode: "cors",
         headers: { "X-Master-Key": API_KEY }
       });
       if (res.ok) {
