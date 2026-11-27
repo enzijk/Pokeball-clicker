@@ -1,6 +1,6 @@
 let gameState = {
   coins: 0,
-  totalClicks: 0, // Suporta números inteiros gigantescos sem truncar
+  totalClicks: 0,
   baseClickPower: 1,
   multiplier: 1,
   coinsPerSecond: 0,
@@ -127,7 +127,18 @@ function getRebirthCost() {
   return costs[gameState.rebirthCount] || 2000000000;
 }
 
-// FUNÇÃO ADMIN PARA ZERAR O PLACAR GLOBAL DIRETAMENTE NO MENU
+// ADICIONAR SUPORTE TÁCTIL (TOUCH) DIRETO NO BOTÃO ADMIN
+window.addEventListener('DOMContentLoaded', () => {
+  const adminBtn = document.getElementById("admin-reset-btn");
+  if (adminBtn) {
+    adminBtn.addEventListener("click", adminResetGlobalLeaderboard);
+    adminBtn.addEventListener("touchend", (e) => {
+      e.preventDefault();
+      adminResetGlobalLeaderboard();
+    });
+  }
+});
+
 async function adminResetGlobalLeaderboard() {
   showCustomMessage(
     "⚠️",
@@ -249,7 +260,6 @@ function promptSaveScore() {
   );
 }
 
-// CORREÇÃO DE CLIQUES GIGANTESCOS: Conversão e salvamento seguros sem perda de precisão
 async function saveScoreAndGame() {
   let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
 
@@ -277,7 +287,6 @@ async function saveScoreAndGame() {
     scores.push({ name: gameState.playerName, clicks: currentClicks });
   }
 
-  // Ordenação numérica rigorosa e segura para milhões/bilhões
   scores.sort((a, b) => (Number(b.clicks) || 0) - (Number(a.clicks) || 0));
   localStorage.setItem("pokeLeaderboard", JSON.stringify(scores));
 
