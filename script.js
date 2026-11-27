@@ -336,7 +336,6 @@ async function handleNameTagStep() {
     return;
   }
 
-  // Verifica se o campo de senha está escondido
   if (passContainer.style.display === "none") {
     let passwordsMap = JSON.parse(localStorage.getItem("poke_passwords_map") || "{}");
     let globalScores = [];
@@ -407,26 +406,6 @@ async function handleNameTagStep() {
     document.getElementById("nametag-modal").classList.add("hidden");
     isForcedNameTag = false;
   }
-}
-
-// Como reiniciar todos os dados do jogo guardados no telemóvel:
-function resetGameData() {
-  showCustomMessage(
-    "🗑️",
-    "Reiniciar Dados",
-    "Tem certeza que deseja apagar sua nametag, senhas e dados locais salvos neste dispositivo?",
-    true,
-    () => {
-      localStorage.removeItem("poke_nametag");
-      localStorage.removeItem("poke_passwords_map");
-      localStorage.removeItem("pokeLeaderboard");
-      gameState.playerName = "";
-      welcomeSubtitle.innerText = "Aventura de Captura Suprema";
-      showCustomMessage("✨", "Pronto", "Dados limpos com sucesso!", false, () => {
-        openNameTagModal(true);
-      });
-    }
-  );
 }
 
 function startAfkTimer() {
