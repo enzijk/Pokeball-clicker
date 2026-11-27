@@ -85,22 +85,23 @@ const defaultUpgrades = [
   { id: "rb_up5", name: "DNA Sincro (Kyurem)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dna-splicers.png", desc: "+50.000 por Clique Base", cost: 150000000, cpc: 50000, cps: 0, count: 0, mult: 1.9, rebirthReq: 5 }
 ];
 
+// MULTIPLICADORES NERFADOS (Fatores reduzidos e custos aumentados para balancear o jogo)
 const defaultMultipliers = [
-  { id: "m_great", name: "Super Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png", desc: "Multiplica cliques por 2x", cost: 500, factor: 2, bought: false, rebirthReq: 0 },
-  { id: "m_ultra", name: "Ultra Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png", desc: "Multiplica cliques por 2x (Total 4x)", cost: 3500, factor: 2, bought: false, rebirthReq: 0 },
-  { id: "m_master", name: "Master Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png", desc: "Multiplica cliques por 2x (Total 8x)", cost: 25000, factor: 2, bought: false, rebirthReq: 0 },
-  { id: "m_safari", name: "Safari Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/safari-ball.png", desc: "Multiplica cliques por 2x (Total 16x)", cost: 150000, factor: 2, bought: false, rebirthReq: 0 },
-  { id: "m_gold", name: "Master Gold Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luxury-ball.png", desc: "Multiplica cliques por 3x (Total 48x)", cost: 1000000, factor: 3, bought: false, rebirthReq: 0 },
-  { id: "m_premier", name: "Premier Ball (Especial)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/premier-ball.png", desc: "Multiplica cliques por 2x", cost: 400000, factor: 2, bought: false, rebirthReq: 1 },
-  { id: "m_cherish", name: "Cherish Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/cherish-ball.png", desc: "Multiplica cliques por 2.5x", cost: 2000000, factor: 2.5, bought: false, rebirthReq: 1 },
-  { id: "m_park", name: "Park Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/park-ball.png", desc: "Multiplica cliques por 3x", cost: 8000000, factor: 3, bought: false, rebirthReq: 2 },
-  { id: "m_dive", name: "Dive Ball (Abissal)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dive-ball.png", desc: "Multiplica cliques por 3.5x", cost: 25000000, factor: 3.5, bought: false, rebirthReq: 2 },
-  { id: "m_dream", name: "Dream Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dream-ball.png", desc: "Multiplica cliques por 4x", cost: 100000000, factor: 4, bought: false, rebirthReq: 3 },
-  { id: "m_dusk", name: "Dusk Ball (Sombria)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dusk-ball.png", desc: "Multiplica cliques por 4.5x", cost: 350000000, factor: 4.5, bought: false, rebirthReq: 3 },
-  { id: "m_beast", name: "Beast Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/beast-ball.png", desc: "Multiplica cliques por 5x", cost: 1000000000, factor: 5, bought: false, rebirthReq: 4 },
-  { id: "m_heal", name: "Heal Ball (Curativa)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/heal-ball.png", desc: "Multiplica cliques por 6x", cost: 3000000000, factor: 6, bought: false, rebirthReq: 4 },
-  { id: "m_prism", name: "Prism Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png", desc: "Multiplica cliques por 8x", cost: 10000000000, factor: 8, bought: false, rebirthReq: 5 },
-  { id: "m_gs", name: "GS Ball (Lendária Mítica)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luxury-ball.png", desc: "Multiplica cliques por 10x", cost: 50000000000, factor: 10, bought: false, rebirthReq: 5 }
+  { id: "m_great", name: "Super Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/great-ball.png", desc: "Multiplica cliques por 1.3x", cost: 800, factor: 1.3, bought: false, rebirthReq: 0 },
+  { id: "m_ultra", name: "Ultra Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/ultra-ball.png", desc: "Multiplica cliques por 1.4x", cost: 5000, factor: 1.4, bought: false, rebirthReq: 0 },
+  { id: "m_master", name: "Master Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png", desc: "Multiplica cliques por 1.5x", cost: 40000, factor: 1.5, bought: false, rebirthReq: 0 },
+  { id: "m_safari", name: "Safari Ball Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/safari-ball.png", desc: "Multiplica cliques por 1.5x", cost: 250000, factor: 1.5, bought: false, rebirthReq: 0 },
+  { id: "m_gold", name: "Master Gold Boost", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luxury-ball.png", desc: "Multiplica cliques por 1.8x", cost: 1500000, factor: 1.8, bought: false, rebirthReq: 0 },
+  { id: "m_premier", name: "Premier Ball (Especial)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/premier-ball.png", desc: "Multiplica cliques por 1.4x", cost: 800000, factor: 1.4, bought: false, rebirthReq: 1 },
+  { id: "m_cherish", name: "Cherish Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/cherish-ball.png", desc: "Multiplica cliques por 1.5x", cost: 4000000, factor: 1.5, bought: false, rebirthReq: 1 },
+  { id: "m_park", name: "Park Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/park-ball.png", desc: "Multiplica cliques por 1.6x", cost: 15000000, factor: 1.6, bought: false, rebirthReq: 2 },
+  { id: "m_dive", name: "Dive Ball (Abissal)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dive-ball.png", desc: "Multiplica cliques por 1.7x", cost: 50000000, factor: 1.7, bought: false, rebirthReq: 2 },
+  { id: "m_dream", name: "Dream Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dream-ball.png", desc: "Multiplica cliques por 1.8x", cost: 200000000, factor: 1.8, bought: false, rebirthReq: 3 },
+  { id: "m_dusk", name: "Dusk Ball (Sombria)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/dusk-ball.png", desc: "Multiplica cliques por 1.9x", cost: 700000000, factor: 1.9, bought: false, rebirthReq: 3 },
+  { id: "m_beast", name: "Beast Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/beast-ball.png", desc: "Multiplica cliques por 2x", cost: 2000000000, factor: 2, bought: false, rebirthReq: 4 },
+  { id: "m_heal", name: "Heal Ball (Curativa)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/heal-ball.png", desc: "Multiplica cliques por 2.2x", cost: 6000000000, factor: 2.2, bought: false, rebirthReq: 4 },
+  { id: "m_prism", name: "Prism Ball", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/master-ball.png", desc: "Multiplica cliques por 2.5x", cost: 20000000000, factor: 2.5, bought: false, rebirthReq: 5 },
+  { id: "m_gs", name: "GS Ball (Lendária Mítica)", icon: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/luxury-ball.png", desc: "Multiplica cliques por 3x", cost: 100000000000, factor: 3, bought: false, rebirthReq: 5 }
 ];
 
 let upgrades = JSON.parse(JSON.stringify(defaultUpgrades));
@@ -127,6 +128,7 @@ function getRebirthCost() {
   return costs[gameState.rebirthCount] || 2000000000;
 }
 
+// CORREÇÃO DOS MODAIS: Garante resposta imediata no primeiro toque/clique sem falhas
 function showCustomMessage(icon, title, text, showCancel = true, onYesCallback = null) {
   document.getElementById("confirm-icon").innerText = icon;
   document.getElementById("confirm-title").innerText = title;
@@ -135,19 +137,31 @@ function showCustomMessage(icon, title, text, showCancel = true, onYesCallback =
   const yesBtn = document.getElementById("confirm-yes-btn");
   const noBtn = document.getElementById("confirm-no-btn");
 
+  // Substitui os ouvintes por novas instâncias limpas para evitar duplicação ou atrasos
+  const newYesBtn = yesBtn.cloneNode(true);
+  yesBtn.parentNode.replaceChild(newYesBtn, yesBtn);
+
+  const newNoBtn = noBtn.cloneNode(true);
+  noBtn.parentNode.replaceChild(newNoBtn, noBtn);
+
   if (showCancel) {
-    yesBtn.style.display = "block";
-    yesBtn.innerText = "Sim";
-    noBtn.style.display = "block";
-    noBtn.onclick = () => {
+    newYesBtn.style.display = "block";
+    newYesBtn.innerText = "Sim";
+    newNoBtn.style.display = "block";
+    
+    newYesBtn.onclick = () => {
       closeCustomConfirm();
       if (onYesCallback) onYesCallback();
     };
+    newNoBtn.onclick = () => {
+      closeCustomConfirm();
+    };
   } else {
-    yesBtn.style.display = "block";
-    yesBtn.innerText = "Ok";
-    noBtn.style.display = "none";
-    yesBtn.onclick = () => {
+    newYesBtn.style.display = "block";
+    newYesBtn.innerText = "Ok";
+    newNoBtn.style.display = "none";
+    
+    newYesBtn.onclick = () => {
       closeCustomConfirm();
       if (onYesCallback) onYesCallback();
     };
@@ -208,6 +222,7 @@ function promptSaveScore() {
   );
 }
 
+// CORREÇÃO DE PONTUAÇÃO: Força leitura estricta de inteiros para evitar bugs em valores altos (milhões/bilhões)
 async function saveScoreAndGame() {
   let scores = JSON.parse(localStorage.getItem("pokeLeaderboard") || "[]");
 
@@ -223,16 +238,20 @@ async function saveScoreAndGame() {
     }
   } catch (e) {}
 
+  let currentClicks = parseInt(gameState.totalClicks, 10) || 0;
+
   let existingIndex = scores.findIndex(s => s.name.toLowerCase() === gameState.playerName.toLowerCase());
   if (existingIndex >= 0) {
-    if (gameState.totalClicks > scores[existingIndex].clicks) {
-      scores[existingIndex].clicks = gameState.totalClicks;
+    let savedClicks = parseInt(scores[existingIndex].clicks, 10) || 0;
+    if (currentClicks > savedClicks) {
+      scores[existingIndex].clicks = currentClicks;
     }
   } else {
-    scores.push({ name: gameState.playerName, clicks: gameState.totalClicks });
+    scores.push({ name: gameState.playerName, clicks: currentClicks });
   }
 
-  scores.sort((a, b) => b.clicks - a.clicks);
+  // Ordenação rigorosa por número inteiro decrescente
+  scores.sort((a, b) => (parseInt(b.clicks, 10) || 0) - (parseInt(a.clicks, 10) || 0));
   localStorage.setItem("pokeLeaderboard", JSON.stringify(scores));
 
   try {
@@ -246,16 +265,9 @@ async function saveScoreAndGame() {
     });
   } catch (e) {}
 
-  showCustomMessage(
-    "✅",
-    "Sucesso!",
-    "Pontuação salva com sucesso! Retornando ao menu...",
-    false,
-    () => {
-      gameContainer.classList.add("hidden");
-      mainMenu.classList.remove("hidden");
-    }
-  );
+  // Retorno imediato e fluido ao menu principal
+  gameContainer.classList.add("hidden");
+  mainMenu.classList.remove("hidden");
 }
 
 async function openLeaderboard() {
@@ -285,7 +297,8 @@ async function openLeaderboard() {
     scores.forEach((p, idx) => {
       let item = document.createElement("div");
       item.className = "leaderboard-item";
-      item.innerHTML = `<span>#${idx+1} <b>${escapeHTML(p.name)}</b></span> <span style="color:#ffcb05;">${p.clicks.toLocaleString()} cliques</span>`;
+      let displayClicks = parseInt(p.clicks, 10) || 0;
+      item.innerHTML = `<span>#${idx+1} <b>${escapeHTML(p.name)}</b></span> <span style="color:#ffcb05;">${displayClicks.toLocaleString()} cliques</span>`;
       list.appendChild(item);
     });
   }
